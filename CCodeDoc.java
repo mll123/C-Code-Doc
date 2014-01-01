@@ -7,6 +7,7 @@
 package ccodedoc;
 
 import java.util.regex.*;
+import java.io.*;
 
 /**
  *
@@ -43,7 +44,17 @@ public class CCodeDoc {
             System.out.println();
             System.out.println("The number of arguments = "+args.length);
             System.out.println("Matched the pattern: "+MyCDoc.getMatch(pattern)+".");
-
+            System.out.println();
+            System.out.println();
+            
+            if (args[1]!=null)
+            {
+                LoadSrcCode LSC = new LoadSrcCode(args[1]);
+                File CFile = LSC.getCFile();
+                System.out.println(CFile.getAbsolutePath());
+                System.out.println();
+                
+            }
         }
         else
         {
