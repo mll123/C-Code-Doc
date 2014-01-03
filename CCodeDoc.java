@@ -15,13 +15,13 @@ import java.io.*;
  */
 public class CCodeDoc {
 
-    public String getMatch(String expression)
+    public String getPattern(String patternArg)
     {
        /**
         * Searches for the match pattern in a text document.
         * @return Match the matched pattern in the text document
         */
-        return expression;
+        return patternArg;
         
     }
           
@@ -30,35 +30,44 @@ public class CCodeDoc {
      * @param args the command line arguments
      */
         
-        String pattern = "";
+        String pattern;
         int i;
 
         // TODO code application logic here
-        if (!args[0].isEmpty())
+        if (args.length > 0)
         {
-            for (i=0;i<args.length;i++)
-            {
-                pattern = pattern+" "+args[i];
-            }
+            pattern = args[0];
+            
             CCodeDoc MyCDoc = new CCodeDoc();
             System.out.println();
+            System.out.println("----------------------------------------------------");
             System.out.println("The number of arguments = "+args.length);
-            System.out.println("Matched the pattern: "+MyCDoc.getMatch(pattern)+".");
-            System.out.println();
+            System.out.println("Matched the pattern: "+MyCDoc.getPattern(pattern)+".");
+            
+            
+            System.out.println("----------------------------------------------------");
             System.out.println();
             
-            if (args[1]!=null)
+            if (args.length > 1)
             {
                 LoadSrcCode LSC = new LoadSrcCode(args[1]);
                 File CFile = LSC.getCFile();
-                System.out.println(CFile.getAbsolutePath());
+                System.out.println(CFile.getPath());
                 System.out.println();
-                
+                System.out.println("----------------------------------------------------");
+                System.out.println("");
+                System.out.println("Content of first line in requested file:");
+                System.out.println(LSC.getCcode());
             }
         }
         else
         {
+            System.out.println();
+            System.out.println("--------------------------------------------------");
             System.out.println("Please provide search pattern text!");
+            System.out.println();
+            System.out.print("Command: java -jar CCodeDoc.jar \"pattern\" textfile ");
+            System.out.println();
         }
                 
     }

@@ -13,18 +13,46 @@ import java.io.*;
  * @author Mike
  */
 public class LoadSrcCode {
-    private String filename;
-    
+    private String filename, code="";
+    private File MyCFile;
+    private BufferedReader codeReader;
+
     public LoadSrcCode(String filename)
     {
         this.filename = filename;
+        this.MyCFile = new File(filename);
     }
     
     public File getCFile()
     {
-        File MyCFile;
-        
-        MyCFile = new File(filename);
         return MyCFile;
+    }
+    
+    public String getCcode()
+    {
+        String myCode="";
+        
+        try
+        {
+            codeReader=new BufferedReader(new FileReader(MyCFile));
+        }
+        catch(FileNotFoundException fnfe)
+        {
+            System.out.println(fnfe.getMessage());
+        }
+        
+        try
+        {
+            while ((code=codeReader.readLine())!=null)
+            {
+                myCode = myCode+code;
+            }
+        }
+        catch(IOException readLineIOE)
+        {
+            System.out.println(readLineIOE.getMessage());
+        }
+        
+        return myCode;
     }
 }
