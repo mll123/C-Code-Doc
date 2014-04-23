@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package ccodedoc;
+package scodog;
 
 import java.util.regex.*;
 import java.io.*;
@@ -14,14 +14,38 @@ import java.io.*;
  * @author Mike
  */
 public class CCodeDoc {
-
-    public String getPattern(String patternArg)
+    private String pattern;
+    private String FileDir;
+        
+    public String getFileDir()
+    {
+        /**
+         * The Directory containing the source code for analysis
+         * @return source code directory
+         */
+        if (FileDir == null)
+            FileDir = "";
+        
+        return FileDir;
+    }
+    
+    public void setFileDir(String FileDirArg)
+    {
+        this.FileDir = FileDirArg;
+        return;
+    }
+    
+    
+    public String[] stmt(String SourceCodeArg)
     {
        /**
-        * Searches for the match pattern in a text document.
-        * @return Match the matched pattern in the text document
+        * Splits the returned source code into statements.
+        * @return the statements in the code in a string array.
         */
-        return patternArg;
+        String[] mystmts;
+        String delimiters = "\\*/|\\.h>|\\{|;|\\}"; 
+        mystmts = SourceCodeArg.split(delimiters,0);
+        return mystmts;
         
     }
           
@@ -30,43 +54,54 @@ public class CCodeDoc {
      * @param args the command line arguments
      */
         
-        String pattern;
-        int i;
+        //int i;
+        String[] statement;
 
-        // TODO code application logic here
+        // TODO code application logic 
         if (args.length > 0)
         {
-            pattern = args[0];
             
             CCodeDoc MyCDoc = new CCodeDoc();
+            MyCDoc.setFileDir("C:\\Mike\\Komatech\\SCoDoG\\dist\\");
+        
             System.out.println();
             System.out.println("----------------------------------------------------");
             System.out.println("The number of arguments = "+args.length);
-            System.out.println("Matched the pattern: "+MyCDoc.getPattern(pattern)+".");
-            
             
             System.out.println("----------------------------------------------------");
             System.out.println();
             
-            if (args.length > 1)
+            if (args.length > 0)
             {
-                LoadSrcCode LSC = new LoadSrcCode(args[1]);
+                FileMan LSC = new FileMan(MyCDoc.getFileDir()+args[0]);
                 File CFile = LSC.getCFile();
                 System.out.println(CFile.getPath());
                 System.out.println();
                 System.out.println("----------------------------------------------------");
                 System.out.println("");
                 System.out.println("Content of first line in requested file:");
-                System.out.println(LSC.getCcode());
+                System.out.println(LSC.getCCode());
+                System.out.println("----------------------------------------------------");
+                
+                System.out.print("Number of statements = ");
+                statement = MyCDoc.stmt(LSC.getCCode());
+                System.out.println(statement.length);
+                System.out.println("----------------------------------------------------");
+                for (int i=0;i<statement.length;i++)
+                {
+                    System.out.println("");
+                    System.out.println("Statement no.: "+(i+1));
+                    System.out.println(statement[i]);
+                }
             }
         }
         else
         {
             System.out.println();
             System.out.println("--------------------------------------------------");
-            System.out.println("Please provide search pattern text!");
+            System.out.println("Please provide ssource file name!");
             System.out.println();
-            System.out.print("Command: java -jar CCodeDoc.jar \"pattern\" textfile ");
+            System.out.print("Command: java -jar \"C:\\Mike\\..\\CCodeDoc.jar\"  textfile ");
             System.out.println();
         }
                 

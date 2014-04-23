@@ -1,4 +1,19 @@
-A half way house between a retard and a sewer rat!!!!
+/*A half way house between a retard and a sewer rat!!!!
 		Text
 
-	Jack is a boy.
+	Jack is a boy.*/
+
+#include <stdio.h> 
+
+int main()
+{
+	int x = 10;
+	int y = 2;
+
+	if (x > y) then
+	{
+	  printf("Display output on the screen");
+	  getChar();
+	  return 0;
+	}
+}
