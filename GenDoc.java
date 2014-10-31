@@ -18,8 +18,13 @@ public class GenDoc {
     private ArrayList<String> functionslist;
     private boolean mainFunc;
     private boolean hasBeenMainFunc;
+    private boolean ifBlock;
     public ArrayList<String> includeFileName;
     public ArrayList<String> variables;
+    public ArrayList<String> ifStmts;
+    public ArrayList<String> ifStmtBlks;
+    public ArrayList<String> FunctionCalls;
+    public ArrayList<String> FunctionArgs;
     
     public GenDoc()
     {
@@ -27,8 +32,13 @@ public class GenDoc {
         datatypeslist=new ArrayList<String>();
         includeFileName = new ArrayList<String>();
         variables = new ArrayList<String>();
+        ifStmts = new ArrayList<String>();
+        ifStmtBlks = new ArrayList<String>();
+        FunctionCalls = new ArrayList<String>();
+        FunctionArgs = new ArrayList<String>();
         mainFunc = false;
         hasBeenMainFunc = false;
+        ifBlock = false;
         
         /*---------------------------------------------------*/
         if (!(keywordslist.add("if"))){
@@ -86,15 +96,53 @@ public class GenDoc {
         if (MyMatch.matches())
         {
                 String S[] = StrLine.split("=",2);
-                String T[] = S[0].split(" ",2);
-                variables.add(T[1]);
+                //String T[] = S[0].split(" ",2);
+                String V[] = S[0].split(" ",0);
+                /*
+                String pat = "\\t";
+                Pattern extraPat = Pattern.compile(pat);
+                Matcher extraMatch = extraPat.matcher(V[V.length - 1]);
+                int i = 0;
+                while (extraMatch.matches())
+                {
+                    i++;
+                }
+                System.out.print("Assignment testing for "+V[V.length -1]);
+                System.out.println(" i = "+i);
+                */
+                variables.add((V[V.length - 1]).replaceAll("^\\s+", ""));
         }
         return MyMatch.matches();
     }
     
+    boolean isIfSentence(String StrLine)
+    {
+        String PatStr = ".*if.*";
+        Pattern MyPat = Pattern.compile(PatStr);
+        Matcher MyMatch = MyPat.matcher(StrLine);
+        if (MyMatch.matches())
+            ifStmts.add(StrLine.substring((StrLine.indexOf("(")+1),StrLine.indexOf(")")));
+        return MyMatch.matches();
+    }
+    
+    boolean isFunctionCall(String StrLine)
+    {
+        String PatStr = ");";
+        //Pattern MyPat = Pattern.compile(PatStr);
+        //Matcher MyMatch = MyPat.matcher(StrLine);
+        //if (MyMatch.matches())
+        if (StrLine.contains(PatStr))
+        {
+            FunctionCalls.add(StrLine.substring(0, StrLine.indexOf("(")));
+            FunctionArgs.add(StrLine.substring(StrLine.indexOf("("), StrLine.indexOf(")")));
+        }
+        return StrLine.contains(PatStr);
+    }
+    
     public String genText(String CodeLine)
     {
-        String myText="False";
+        String myText="";
+        System.out.println("The code Line being processed now is "+ CodeLine);
         if (isIncludeDirective(CodeLine))
         {
             myText="Doc has \"include\" directive";
@@ -116,14 +164,52 @@ public class GenDoc {
         
         if (mainFunc)
         {
+            if (ifBlock)
+            {
+               //System.out.println("Hello Code Line "+CodeLine);
+                ifStmtBlks.add(CodeLine);
+                //System.out.println("Mike : Here is the deal: " + ifStmtBlks.get(ifStmtBlks.size() - 1));
+                myText = "statement execution for if condition ";
+                myText = myText + ifStmts.get(ifStmts.size() - 1);
+                
+                /*Check for end of if block here*/
+                String PatStr = "\\}";
+                Pattern P = Pattern.compile(PatStr);
+                Matcher M = P.matcher(CodeLine);
+                if (M.matches())
+                {
+                    myText = myText + "\nEnd of IF statement block";
+                    ifBlock = false;
+                }
+            }
+
             if (isAssignStm(CodeLine))
             {
-                myText = "Assignment statement.";
+                myText = myText + "Assignment statement.";
                 myText = myText + " Variable "+ variables.get(variables.size() - 1);
                 myText = myText + " gets a value.";
             }
+            
+            if (isIfSentence(CodeLine))
+            {
+                ifBlock = true;
+                myText = myText + "\"If\" sentence condition: ";
+                myText = myText + ifStmts.get(ifStmts.size() - 1);
+            }
+            
+            if (isFunctionCall(CodeLine))
+            {
+                myText = myText + " Function call made to ";
+                myText = myText + FunctionCalls.get(FunctionCalls.size() - 1);
+                myText = myText + " with arguments: ";
+                myText = myText + FunctionArgs.get(FunctionArgs.size() - 1);
+            }
                     
         }
+        
+        
         return myText;
     }
+    
+    
 }

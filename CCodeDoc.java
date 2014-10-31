@@ -43,22 +43,24 @@ public class CCodeDoc {
         * @return the statements in the code in a string array.
         */
         String[] mystmts;
+        String line;
         String delimiters = "\\*/|\\.h>|\\{|;|\\}"; 
-        mystmts = SourceCodeArg.split(delimiters,0);
+        mystmts = SourceCodeArg.split(":",0);
         return mystmts;
         
     }
           
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
+    */
     /**
      * @param args the command line arguments
      */
         
         //int i;
-        String[] statement;
-
+/*        String[] statement;
+*/
         // TODO code application logic 
-        if (args.length > 0)
+/*        if (args.length > 0)
         {
             
             CCodeDoc MyCDoc = new CCodeDoc();
@@ -101,10 +103,10 @@ public class CCodeDoc {
             System.out.println("--------------------------------------------------");
             System.out.println("Please provide ssource file name!");
             System.out.println();
-            System.out.print("Command: java -jar \"C:\\Mike\\..\\CCodeDoc.jar\"  textfile ");
+            System.out.print("Command: java -jar \"C:\\Mike\\..\\SCoDog.jar\"  textfile ");
             System.out.println();
         }
                 
     }
-    
+    */
 }
