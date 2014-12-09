@@ -19,10 +19,16 @@ public class GenDoc {
     private boolean mainFunc;
     private boolean hasBeenMainFunc;
     private boolean ifBlock;
+    private boolean whileBlock;
+    private boolean forBlock;
     public ArrayList<String> includeFileName;
     public ArrayList<String> variables;
     public ArrayList<String> ifStmts;
+    public ArrayList<String> whileStmts;
+    public ArrayList<String> forStmts;
     public ArrayList<String> ifStmtBlks;
+    public ArrayList<String> whileStmtBlks;
+    public ArrayList<String> forStmtBlks;
     public ArrayList<String> FunctionCalls;
     public ArrayList<String> FunctionArgs;
     
@@ -33,12 +39,18 @@ public class GenDoc {
         includeFileName = new ArrayList<String>();
         variables = new ArrayList<String>();
         ifStmts = new ArrayList<String>();
+        whileStmts = new ArrayList<String>();
+        forStmts = new ArrayList<String>();
         ifStmtBlks = new ArrayList<String>();
+        whileStmtBlks = new ArrayList<String>();
+        forStmtBlks = new ArrayList<String>();
         FunctionCalls = new ArrayList<String>();
         FunctionArgs = new ArrayList<String>();
         mainFunc = false;
         hasBeenMainFunc = false;
         ifBlock = false;
+        whileBlock = false;
+        forBlock = false;
         
         /*---------------------------------------------------*/
         if (!(keywordslist.add("if"))){
@@ -125,6 +137,16 @@ public class GenDoc {
         return MyMatch.matches();
     }
     
+    boolean isWhileLoop(String StrLine)
+    {
+        String PatStr =".*while.*";
+        Pattern MyPat = Pattern.compile(PatStr);
+        Matcher MyMatch = MyPat.matcher(StrLine);
+        if (MyMatch.matches())
+            whileStmts.add(StrLine.substring((StrLine.indexOf("(")+1),StrLine.indexOf(")")));
+        return MyMatch.matches();
+    }
+    
     boolean isFunctionCall(String StrLine)
     {
         String PatStr = ");";
@@ -134,7 +156,7 @@ public class GenDoc {
         if (StrLine.contains(PatStr))
         {
             FunctionCalls.add(StrLine.substring(0, StrLine.indexOf("(")));
-            FunctionArgs.add(StrLine.substring(StrLine.indexOf("("), StrLine.indexOf(")")));
+            FunctionArgs.add(StrLine.substring(StrLine.indexOf("("), StrLine.indexOf(")")+1));
         }
         return StrLine.contains(PatStr);
     }
@@ -166,19 +188,35 @@ public class GenDoc {
         {
             if (ifBlock)
             {
-               //System.out.println("Hello Code Line "+CodeLine);
-                ifStmtBlks.add(CodeLine);
-                //System.out.println("Mike : Here is the deal: " + ifStmtBlks.get(ifStmtBlks.size() - 1));
-                myText = "statement execution for if condition ";
-                myText = myText + ifStmts.get(ifStmts.size() - 1);
+               //System.out.println("Hello' Code Line "+CodeLine);
+                String neg1 = "\\s*\\{\\s*";
+                String neg2 = ".*return.*";
+                String neg3 = ".*\\}.*";
+                Pattern myP1 = Pattern.compile(neg1);
+                Matcher myM1 = myP1.matcher(CodeLine);
+                Pattern myP2 = Pattern.compile(neg2);
+                Matcher myM2 = myP2.matcher(CodeLine);
+                Pattern myP3 = Pattern.compile(neg3);
+                Matcher myM3 = myP3.matcher(CodeLine);
                 
+                if (!(myM1.matches())&&!(myM2.matches())&&!(myM3.matches()))
+                {
+                    System.out.println("Mike-Hello: The if exec code is "+CodeLine);
+                    ifStmtBlks.add(CodeLine);
+                //System.out.println("Mike : Here is the deal: " + ifStmtBlks.get(ifStmtBlks.size() - 1));
+                    myText = "statement execution for if condition ";
+                    myText = myText + ifStmts.get(ifStmts.size() - 1);
+                } else
+                {
+                    System.out.println("Mike-Hello: The if exec code NOT EXECUTED is "+CodeLine);
+                }
                 /*Check for end of if block here*/
-                String PatStr = "\\}";
+                String PatStr = ".*\\}.*";
                 Pattern P = Pattern.compile(PatStr);
                 Matcher M = P.matcher(CodeLine);
                 if (M.matches())
                 {
-                    myText = myText + "\nEnd of IF statement block";
+                    myText = myText + "End of IF statement block";
                     ifBlock = false;
                 }
             }
@@ -193,8 +231,15 @@ public class GenDoc {
             if (isIfSentence(CodeLine))
             {
                 ifBlock = true;
-                myText = myText + "\"If\" sentence condition: ";
+                myText = myText + "\"if\" sentence condition: ";
                 myText = myText + ifStmts.get(ifStmts.size() - 1);
+            }
+            
+            if (isWhileLoop(CodeLine))
+            {
+                whileBlock = true;
+                myText = myText + "\"while\" loop condition: ";
+                myText = myText + whileStmts.get(whileStmts.size() - 1);
             }
             
             if (isFunctionCall(CodeLine))
